@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bingo</title>
+<style>
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+:root{--bg:#eef1f6;--pn:#fff;--ink:#1d2433;--mu:#6b7385;--acc:#e63946;--acc2:#2456d6;--mk:#ffc233;--mi:#2a1d00;--bd:#d5dbe6;--ft:ui-rounded,'Segoe UI',system-ui,sans-serif;--gl:0 6px 18px #1d243316;--bgi:none;--bgs:auto}
+[data-theme=cyber]{--bg:#0a0a14;--pn:#13132b;--ink:#e6f7ff;--mu:#7a8bb0;--acc:#ff2bd6;--acc2:#00f0ff;--mk:#00f0ff;--mi:#021018;--bd:#2f2f6a;--ft:'Courier New',monospace;--gl:0 0 14px #00f0ff55;--bgi:repeating-linear-gradient(0deg,#0000 0 3px,#ffffff0a 3px 4px)}
+[data-theme=persia]{--bg:#0c3b5c;--pn:#124a6e;--ink:#f6e7bd;--mu:#b9c9c4;--acc:#e0b13a;--acc2:#2cc3b0;--mk:#e0b13a;--mi:#3a0c0c;--bd:#e0b13a77;--ft:Amiri,'Noto Naskh Arabic',Georgia,serif;--gl:0 6px 18px #0005;--bgi:radial-gradient(circle,#ffffff14 0 14%,#0000 15%),conic-gradient(from 45deg,#0000 0 25%,#ffffff0b 0 50%,#0000 0 75%,#ffffff0b 0);--bgs:56px 56px}
+[data-theme=ocean]{--bg:#03283b;--pn:#073c57;--ink:#e3f6ff;--mu:#8fb7cc;--acc:#ff7a59;--acc2:#3fd0ff;--mk:#3fd0ff;--mi:#00202e;--bd:#1d5e80;--gl:0 6px 18px #0005}
+[data-theme=sunset]{--bg:#2b1030;--pn:#431a49;--ink:#ffe9d6;--mu:#c9a2bd;--acc:#ff6b6b;--acc2:#ffb347;--mk:#ffb347;--mi:#2b1030;--bd:#7a3a73;--gl:0 6px 18px #0005}
+body{background:var(--bg) var(--bgi);background-size:var(--bgs);color:var(--ink);font:16px/1.45 var(--ft);min-height:100vh;font-variant-numeric:tabular-nums}
+.wrap{max-width:720px;margin:auto;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 40px max(14px,env(safe-area-inset-left))}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8,#0000 45%),var(--acc);color:var(--bg);display:grid;place-items:center;font-weight:900;font-size:22px;box-shadow:var(--gl)}
+h1{font-size:26px;letter-spacing:.03em}
+h3{margin:22px 0 8px;font-size:17px}
+button,select,input,textarea{font:inherit;color:var(--ink);background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:9px 14px}
+button{cursor:pointer;transition:transform .12s,border-color .12s}
+button:hover:not(:disabled){border-color:var(--acc2)}button:active:not(:disabled){transform:scale(.97)}
+button:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.pri{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:800}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.mu{color:var(--mu);font-size:14px}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:18px;padding:14px;box-shadow:var(--gl);margin-bottom:14px}
+.card.hi{border:2px solid var(--acc)}
+.lbl{font-size:13px;color:var(--mu);margin:10px 0 6px}
+.pills{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pill{min-width:52px;font-weight:800;border-radius:99px}
+.pill.on{background:var(--acc2);color:var(--bg);border-color:var(--acc2)}
+.sw{display:flex;gap:10px}
+.sw button{width:38px;height:38px;border-radius:50%;padding:0;border:3px solid var(--bd)}
+.sw button.on{border-color:var(--ink)}
+.tiles{display:grid;gap:12px;margin:16px 0}
+.tile{display:flex;gap:16px;align-items:center;text-align:start;padding:20px;border-radius:20px;border:2px solid var(--bd);background:var(--pn);box-shadow:var(--gl)}
+.tile:hover{border-color:var(--acc);transform:translateY(-2px)}
+.tile i{font-style:normal;font-size:44px}
+.tile b{display:block;font-size:24px;color:var(--acc)}.tile span{color:var(--mu)}
+.hero{text-align:center;margin:18px 0 6px}.hero p{color:var(--mu)}
+.grid{display:grid;gap:6px;direction:ltr}
+.h{text-align:center;font-weight:900;font-size:26px;color:var(--acc2)}
+.c{aspect-ratio:1;padding:0;font-size:clamp(14px,calc(var(--k)*1vw),calc(var(--k)*5.2px));font-weight:800;border:2px solid var(--bd);border-radius:12px}
+.c.m{border-color:var(--mk);color:var(--mi);background:radial-gradient(circle,var(--mk) 0 64%,#0000 66%) center/100% 100% no-repeat;animation:st .25s}
+@keyframes st{from{background-size:0}}
+.c.f{border-style:dashed}
+.c.x{background:repeating-linear-gradient(45deg,#0000 0 6px,var(--bd) 6px 7px);border-style:dotted}
+.c.k{outline:3px dashed var(--acc2);outline-offset:-3px}
+.c.w{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc);animation:pl .8s infinite alternate}
+@keyframes pl{to{box-shadow:0 0 0 3px var(--acc),0 0 18px var(--acc)}}
+code{display:block;word-break:break-all;background:var(--bg);border-radius:10px;padding:8px;font-size:13px;direction:ltr;text-align:left;margin-top:6px}
+#qn{width:150px}
+.ballbox{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center}
+#ball{width:168px;height:168px;border-radius:50%;border:8px solid var(--acc);background:radial-gradient(circle at 35% 28%,#fff9,#0000 38%),var(--pn);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:70px;font-weight:900;line-height:1;box-shadow:var(--gl);direction:ltr}
+#ball small{font-size:26px}
+#ball.pop{animation:pop .45s}
+@keyframes pop{0%{transform:scale(.3) rotate(-120deg)}70%{transform:scale(1.1)}}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:3px 10px;border-radius:99px;border:1px solid var(--bd);background:var(--bg);direction:ltr;font-weight:800}
+.chip.now{background:var(--mk);color:var(--mi);border-color:var(--mk)}
+.draw{flex:1;font-size:22px;padding:16px;min-width:140px}
+.board{display:grid;gap:3px;direction:ltr}
+.board i{font-style:normal;text-align:center;font-size:clamp(8px,2.2vw,15px);padding:3px 0;border-radius:5px;background:var(--bg);color:var(--mu)}
+.board i.on{background:var(--mk);color:var(--mi);font-weight:900}
+.board b{color:var(--acc2);padding-inline:4px}
+.big-code{font-size:40px;font-weight:900;letter-spacing:.2em;color:var(--acc);direction:ltr}
+summary{cursor:pointer;font-weight:800}
+#claims div{padding:6px 0;border-top:1px solid var(--bd);font-size:14px}
+#banner{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(60px,20vw,140px);font-weight:900;color:var(--mk);text-shadow:0 0 30px var(--acc),0 4px 0 var(--acc);background:#000a;z-index:20;animation:pop .6s}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:30;max-width:90vw}
+.cf{position:fixed;top:-20px;width:9px;height:14px;z-index:25;animation:fall 2.6s linear forwards}
+@keyframes fall{to{transform:translate(var(--dx),108vh) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+button,select,input,textarea,a.btn{min-height:44px}
+input[type=checkbox]{min-height:0;width:20px;height:20px;vertical-align:middle}
+.c,.sw button,button.lnk{min-height:0}
+.sw button{width:44px;height:44px}
+#jc,#jn{min-width:0;flex:1 1 110px}
+#ball{width:clamp(120px,34vw,180px);height:clamp(120px,34vw,180px);font-size:clamp(48px,13vw,76px)}
+.cols{display:grid;gap:14px;align-items:start}
+.foot{margin-top:26px;text-align:center;color:var(--mu);font-size:14px}
+button.lnk{background:none;border:0;color:var(--acc2);text-decoration:underline;padding:4px 8px}
+a{color:var(--acc2)}
+a.btn{display:inline-flex;align-items:center;padding:10px 18px;border-radius:12px;background:var(--acc);color:var(--bg);font-weight:800;text-decoration:none;word-break:break-all}
+.about{max-width:760px;margin:auto}
+.about .card{text-align:start}.about .tc{text-align:center}
+.about p,.about li{margin:6px 0}.about ol,.about ul{padding-inline-start:24px}
+.logo.xl{width:76px;height:76px;font-size:42px;margin:0 auto 10px}
+@media(min-width:600px){.wrap{max-width:880px}.tiles{grid-template-columns:1fr 1fr}.tile{flex-direction:column;text-align:center}.card{padding:18px}h1{font-size:30px}}
+@media(min-width:960px){.wrap{max-width:1180px}.cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}.cols.c2{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}body{font-size:17px}}
+@media(min-width:1500px){.wrap{max-width:1360px}body{font-size:18px}}
+@media(max-height:520px) and (orientation:landscape){#ball{width:110px;height:110px;font-size:44px}}
+@media(hover:none){.tile:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="brand"><span class="logo">B</span><h1 data-i="title"></h1></div>
+<div class="row" style="margin:0"><button id="homeb" hidden aria-label="Home">⌂</button><button id="infob" data-go="about" aria-label="About">ℹ</button><button id="setb" aria-label="Settings">⚙</button></div>
+</header>
+
+<div id="sheet" class="card" hidden>
+<div class="lbl" data-i="variant"></div><div class="pills"></div>
+<div class="lbl" data-i="pattern"></div><select id="pat"></select>
+<div class="lbl" data-i="theme"></div><div id="sw" class="sw"></div>
+<div class="row"><button id="lng"></button><button id="snd"></button></div>
+</div>
+
+<section id="v-home">
+<div class="hero"><div class="pills" style="justify-content:center"></div></div>
+<div class="tiles">
+<button class="tile" data-go="player"><i>🎟️</i><div><b data-i="player"></b><span data-i="playerD"></span></div></button>
+<button class="tile" data-go="caller"><i>🎱</i><div><b data-i="caller"></b><span data-i="callerD"></span></div></button>
+</div>
+<p class="mu" data-i="tip" style="text-align:center"></p>
+</section>
+
+<section id="v-player" hidden><div class="cols"><div>
+<div class="card hi"><div class="grid" id="grid"></div></div>
+<div id="live" class="chips" style="margin-bottom:12px" hidden></div>
+</div><div>
+<div class="row">
+<button id="claim" class="pri draw" hidden data-i="claim"></button>
+<input id="qn" type="number" min="1" max="90" data-p="qn">
+<button id="newc" data-i="newCard"></button>
+<button id="clr" data-i="clear"></button>
+</div>
+<p class="mu" data-i="hint"></p>
+<details class="card" id="lk-p"><summary data-i="join"></summary>
+<div class="row"><input id="jc" maxlength="4" size="5" style="text-transform:uppercase;direction:ltr" data-p="rcode"><input id="jn" maxlength="16" data-p="yname"><button id="jb" class="pri" data-i="jbtn"></button><button id="lv" hidden data-i="leaveb"></button></div>
+<label id="amw" hidden><input type="checkbox" id="am"> <span data-i="amark"></span></label>
+<div id="jst" class="mu"></div>
+</details>
+<div class="row"><span class="mu" data-i="code"></span><button id="cp" data-i="copy"></button></div>
+<code id="code"></code>
+</div></div></section>
+
+<section id="v-caller" hidden><div class="cols c2"><div>
+<div class="card hi"><div class="ballbox"><div id="ball">?</div><div><div class="mu" id="cnt"></div><div id="prev" class="chips"></div></div></div></div>
+<div class="row">
+<button id="draw" class="pri draw" data-i="draw"></button>
+<button id="undo" data-i="undo"></button>
+<button id="auto"></button>
+<select id="int"><option value="5">5s</option><option value="8">8s</option><option value="12">12s</option><option value="20">20s</option></select>
+<label><input type="checkbox" id="spk"> <span data-i="speak"></span></label>
+<button id="ng" data-i="newGame"></button>
+</div>
+<details class="card" id="lk-h"><summary data-i="link"></summary>
+<p class="mu" data-i="linkNote" style="margin:8px 0"></p>
+<div class="row"><button id="openb" class="pri" data-i="openRoom"></button><button id="closeb" hidden data-i="closeRoom"></button></div>
+<div id="room" hidden><div class="big-code" id="rc"></div><div class="row"><button id="cl" data-i="copyLink"></button></div><div id="pl" class="mu"></div><div id="claims"></div></div>
+</details>
+</div><div>
+<div class="card"><div class="board" id="board"></div></div>
+<h3 data-i="hist"></h3><div id="hist" class="chips"></div>
+<h3 data-i="verify"></h3>
+<textarea id="vin" rows="2" style="width:100%;direction:ltr" data-p="vph"></textarea>
+<div class="row"><button id="vb" data-i="verify"></button></div>
+<div id="vres" style="font-weight:800"></div>
+</div></div></section>
+<section id="v-about" class="about" hidden>
+<div class="card hi tc"><div class="logo xl">B</div><h2 data-i="title"></h2><p class="mu"><span data-i="abTag"></span> · v2.1</p>
+<p data-i="made" style="font-weight:800;font-size:1.1em;margin-top:12px"></p>
+<p class="mu" data-i="abFb"></p>
+<div class="row" style="justify-content:center"><a class="btn" href="mailto:3alirezare3@gmail.com?subject=Bingo%20feedback">✉ 3alirezare3@gmail.com</a></div></div>
+<div class="card"><h3 data-i="abHow" style="margin-top:0"></h3><ol><li data-i="abH1"></li><li data-i="abH2"></li><li data-i="abH3"></li><li data-i="abH4"></li></ol></div>
+<div class="card"><h3 data-i="abFeat" style="margin-top:0"></h3><p data-i="abFeatT"></p></div>
+<div class="card"><h3 data-i="abPriv" style="margin-top:0"></h3><p data-i="abPrivT"></p></div>
+<div class="card"><h3 data-i="abUse" style="margin-top:0"></h3><p data-i="abUseT"></p></div>
+<div class="card"><h3 data-i="abCred" style="margin-top:0"></h3><p data-i="abCredT"></p></div>
+</section>
+<footer class="foot"><span data-i="made"></span> · <button class="lnk" data-go="about" data-i="about"></button></footer>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+let S=Object.assign({theme:'classic',lang:'en',snd:true,pat:'line',view:'home',vid:75,card:null,marks:[],won:false,called:[],speak:false,am:false,nm:''},ld('bingo2',{}));
+let role='',room='',peer,conns=[],hostConn,RC=[];
+const stMsg=()=>({t:'st',v:S.vid,called:S.called,pat:S.pat});
+const bc=m=>conns.forEach(c=>c.open&&c.send(m));
+const save=()=>{try{localStorage.setItem('bingo2',JSON.stringify(S))}catch(e){}if(role=='host')bc(stMsg())};
+const I={en:{title:'Bingo',about:'About',made:'Made with ❤️ by Alireza Zare',abTag:'Offline bingo for family, friends and classrooms',abHow:'How to play',abH1:'Pick a game type (30, 75, 80 or 90) and a win pattern in ⚙ Settings.',abH2:'One person is the Caller and draws the numbers. Everyone else opens a Player card.',abH3:'Tap each number on your card when it is called. Complete the pattern, then call BINGO.',abH4:'The caller can check a winner by pasting the card code, or automatically when devices are linked.',abFeat:'Features',abFeatT:'Four game types, six win patterns, five themes, English and Persian, voice calling, auto-draw, saved progress, and optional device link-up.',abPriv:'Privacy',abPrivT:'No accounts, no tracking. Game data stays in this browser. When you link devices, only the room code, your name and your card are sent, through the free PeerJS service.',abUse:'Use it anywhere',abUseT:'Save this single file and open it in any browser, host it on GitHub Pages, or use Add to Home Screen on your phone. It works on laptops, tablets and phones.',abFb:'Found a bug or have an idea? Send me an email.',abCred:'Credits',abCredT:'Online link-up uses the open-source PeerJS library. Everything else is plain HTML, CSS and JavaScript.',player:'Player',playerD:'Get a card and tick numbers as they are called',caller:'Caller',callerD:'Draw numbers and keep the game history',tip:'Works offline. Progress is saved on this device.',variant:'Game type',pattern:'Win pattern',theme:'Theme',v30:'Mini: 3×3 card, numbers 1–30',v75:'American: 5×5 card, 1–75',v80:'Speed: 4×4 card, 1–80',v90:'British: 3×9 ticket, 1–90',newCard:'New card',clear:'Clear marks',code:'Card code',copy:'Copy',copied:'Copied',qn:'Called number',no:'That number is not on your card',hint:'Tap a number to mark it, or type the called number to mark it fast.',draw:'Draw',undo:'Undo',newGame:'New game',auto:'Auto',stop:'Stop',speak:'Speak',hist:'History',verify:'Verify a card',vph:"Paste the player's card code",ok:'✔ Valid BINGO!',notyet:'✘ Not a bingo yet',bad:'Invalid card code',unc:'Not called',done:'All numbers have been drawn',confirm:'Start over? This cannot be undone.',bingo:'BINGO!',left:'left',link:'Link up devices',linkNote:'Players join with a room code. Connecting needs internet; the game itself works offline.',openRoom:'Open room',closeRoom:'Close room',copyLink:'Copy invite link',players:'Players',join:'Join a game',rcode:'Room code',yname:'Your name',jbtn:'Join',leaveb:'Leave',amark:'Auto-mark called numbers',claim:'Call BINGO!',offl:'Could not connect. Check your internet.',nor:'Room not found',lost:'Disconnected',conn:'Connected to room',th_classic:'Hall',th_cyber:'Cyberpunk',th_persia:'Old Persia',th_ocean:'Ocean',th_sunset:'Sunset',p_line:'Any line',p_two:'Two lines',p_corners:'Four corners',p_x:'X shape',p_plus:'Plus',p_frame:'Frame',p_full:'Full house'},
+fa:{title:'بینگو',about:'درباره',made:'ساخته‌شده با ❤️ توسط علیرضا زارع',abTag:'بینگوی آفلاین برای خانواده، دوستان و کلاس',abHow:'روش بازی',abH1:'در ⚙ تنظیمات نوع بازی (۳۰، ۷۵، ۸۰ یا ۹۰) و الگوی برد را انتخاب کنید.',abH2:'یک نفر گرداننده است و عددها را قرعه می‌کشد. بقیه کارت بازیکن را باز می‌کنند.',abH3:'هر عدد که اعلام شد روی کارت بزنید. الگو که کامل شد، بینگو بگویید.',abH4:'گرداننده با چسباندن کد کارت، یا خودکار در حالت اتصال دستگاه‌ها، برنده را بررسی می‌کند.',abFeat:'امکانات',abFeatT:'چهار نوع بازی، شش الگوی برد، پنج پوسته، فارسی و انگلیسی، اعلام صوتی، قرعه خودکار، ذخیره پیشرفت و اتصال اختیاری دستگاه‌ها.',abPriv:'حریم خصوصی',abPrivT:'بدون حساب کاربری و بدون ردیابی. داده‌های بازی فقط در همین مرورگر می‌ماند. در اتصال دستگاه‌ها فقط کد اتاق، نام و کارت شما از طریق سرویس رایگان PeerJS ارسال می‌شود.',abUse:'همه‌جا قابل استفاده',abUseT:'این یک فایل را ذخیره کنید و در هر مرورگری باز کنید، روی GitHub Pages بگذارید یا در گوشی «افزودن به صفحه اصلی» بزنید. روی لپ‌تاپ، تبلت و موبایل کار می‌کند.',abFb:'باگ پیدا کردید یا ایده دارید؟ برایم ایمیل بفرستید.',abCred:'سپاس',abCredT:'اتصال آنلاین از کتابخانه متن‌باز PeerJS استفاده می‌کند. بقیه برنامه فقط HTML، CSS و JavaScript ساده است.',player:'بازیکن',playerD:'یک کارت بگیرید و عددهای اعلام‌شده را علامت بزنید',caller:'گرداننده',callerD:'عددها را قرعه بکشید و تاریخچه بازی را ببینید',tip:'بدون اینترنت کار می‌کند. پیشرفت روی همین دستگاه ذخیره می‌شود.',variant:'نوع بازی',pattern:'الگوی برد',theme:'پوسته',v30:'مینی: کارت ۳×۳، عدد ۱ تا ۳۰',v75:'آمریکایی: کارت ۵×۵، ۱ تا ۷۵',v80:'سریع: کارت ۴×۴، ۱ تا ۸۰',v90:'بریتانیایی: کارت ۳×۹، ۱ تا ۹۰',newCard:'کارت جدید',clear:'پاک کردن علامت‌ها',code:'کد کارت',copy:'کپی',copied:'کپی شد',qn:'عدد اعلام‌شده',no:'این عدد روی کارت شما نیست',hint:'روی عدد بزنید تا علامت بخورد، یا عدد اعلام‌شده را بنویسید.',draw:'قرعه',undo:'بازگشت',newGame:'بازی جدید',auto:'خودکار',stop:'توقف',speak:'گفتن عدد',hist:'تاریخچه',verify:'بررسی کارت',vph:'کد کارت بازیکن را بچسبانید',ok:'✔ بینگوی معتبر!',notyet:'✘ هنوز بینگو نیست',bad:'کد کارت نامعتبر است',unc:'اعلام‌نشده',done:'همه عددها کشیده شد',confirm:'از نو شروع شود؟ قابل بازگشت نیست.',bingo:'بینگو!',left:'مانده',link:'اتصال دستگاه‌ها',linkNote:'بازیکن‌ها با کد اتاق وارد می‌شوند. اتصال به اینترنت نیاز دارد؛ خود بازی آفلاین کار می‌کند.',openRoom:'ساخت اتاق',closeRoom:'بستن اتاق',copyLink:'کپی لینک دعوت',players:'بازیکن‌ها',join:'ورود به بازی',rcode:'کد اتاق',yname:'نام شما',jbtn:'ورود',leaveb:'خروج',amark:'علامت‌زدن خودکار عددهای اعلام‌شده',claim:'بینگو!',offl:'اتصال برقرار نشد. اینترنت را بررسی کنید.',nor:'اتاق پیدا نشد',lost:'اتصال قطع شد',conn:'متصل به اتاق',th_classic:'سالن',th_cyber:'سایبرپانک',th_persia:'ایران باستان',th_ocean:'اقیانوس',th_sunset:'غروب',p_line:'هر خط',p_two:'دو خط',p_corners:'چهار گوشه',p_x:'ضربدر',p_plus:'بعلاوه',p_frame:'قاب',p_full:'کارت کامل'}};
+const t=k=>I[S.lang][k]||I.en[k]||k;
+
+/* variants */
+const V={30:{N:30,R:3,C:3,cs:10,L:'BIN'},75:{N:75,R:5,C:5,cs:15,L:'BINGO',free:1},80:{N:80,R:4,C:4,cs:20,L:'BING'},90:{N:90,R:3,C:9,cs:10,L:'',tk:1}};
+const vv=()=>V[S.vid],COL=['#2f6fed','#e5484d','#8b8d98','#30a46c','#f5a524'];
+const rg=(v,c)=>v.tk?[c?c*10:1,c==8?90:c*10+9]:[c*v.cs+1,(c+1)*v.cs];
+const lt=n=>{const v=vv();return v.L?v.L[Math.min((n-1)/v.cs|0,v.L.length-1)]:''};
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const span=(lo,hi)=>[...Array(hi-lo+1)].map((_,i)=>lo+i);
+function gen(v){const{R,C}=v,c=Array(R*C).fill(-1);
+if(v.tk){let rows,cnt;do{rows=[0,1,2].map(()=>shuf(span(0,8)).slice(0,5));cnt=Array(9).fill(0);rows.forEach(r=>r.forEach(x=>cnt[x]++))}while(cnt.some(x=>!x));
+for(let col=0;col<9;col++){const[lo,hi]=rg(v,col),ns=shuf(span(lo,hi)).slice(0,cnt[col]).sort((a,b)=>a-b);let k=0;rows.forEach((r,ri)=>{if(r.includes(col))c[ri*9+col]=ns[k++]})}}
+else{for(let col=0;col<C;col++){const[lo,hi]=rg(v,col);shuf(span(lo,hi)).slice(0,R).forEach((n,r)=>c[r*C+col]=n)}if(v.free)c[12]=0}
+return c}
+function newCard(){S.card=gen(vv());S.marks=S.card.map(n=>n==0);S.won=false;save()}
+function sets(v){const{R,C}=v,s=[];for(let r=0;r<R;r++)s.push(span(0,C-1).map(c=>r*C+c));if(v.tk)return s;for(let c=0;c<C;c++)s.push(span(0,R-1).map(r=>r*C+c));if(R==C)s.push(span(0,R-1).map(i=>i*C+i),span(0,R-1).map(i=>i*C+C-1-i));return s}
+function pats(v){const{R,C}=v,a=span(0,R*C-1);if(v.tk)return{line:1,two:1,full:a};const o={line:1,corners:[0,C-1,(R-1)*C,R*C-1]},s=sets(v);
+if(R==C)o.x=[...new Set(s.slice(-2).flat())];if(R==C&&R%2)o.plus=[...new Set([...s[R>>1],...s[R+(R>>1)]])];
+o.frame=a.filter(i=>i%C%(C-1)==0||(i/C|0)%(R-1)==0);o.full=a;return o}
+function winCells(card,m,v,p){const ok=i=>card[i]<0||m[i],s=new Set();
+if(p=='line'||p=='two'){const w=sets(v).filter(l=>l.every(ok));if(w.length>=(p=='two'?2:1))w.forEach(l=>l.forEach(i=>s.add(i)))}
+else{const l=(pats(v)[p]||[]).filter(i=>card[i]>=0);if(l.length&&l.every(ok))l.forEach(i=>s.add(i))}return s}
+function fixPat(){if(!pats(vv())[S.pat])S.pat='line'}
+function checkCard(card,v,called,p){const ns=Array.isArray(card)?card.filter(n=>n>0):[];
+const bad=!Array.isArray(card)||card.length!=v.R*v.C||card.some((n,i)=>!Number.isInteger(n)||(n==0?!(v.free&&i==12):n<0?!v.tk:(r=>n<r[0]||n>r[1])(rg(v,i%v.C))))||new Set(ns).size!=ns.length||ns.length!=(v.tk?15:v.R*v.C-(v.free?1:0))||(v.tk&&[0,1,2].some(r=>card.slice(r*9,r*9+9).filter(n=>n>0).length!=5));
+if(bad)return{bad:1};return{win:winCells(card,card.map(n=>n==0||called.includes(n)),v,p).size>0,miss:ns.filter(n=>!called.includes(n)).sort((a,b)=>a-b)}}
+const enc=()=>S.vid+':'+S.card.map(n=>n>0?n:n==0?'*':'.').join('-');
+function dec(s){const[a,b]=s.includes(':')?s.split(':'):[S.vid,s];if(!V[+a])return null;return{id:+a,card:b.trim().split(/[-\s,]+/).map(x=>x=='*'?0:x=='.'?-1:+x)}}
+
+/* sound, toast, confetti */
+let ac;function beep(f=440,d=.1,w=0){if(!S.snd)return;try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain(),s=ac.currentTime+w;o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.12,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d)}catch(e){}}
+let tt;function toast(m){const e=$('#toast');e.textContent=m;e.hidden=false;clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,2600)}
+function confetti(){const cs=['--acc','--acc2','--mk'].map(v=>getComputedStyle(document.documentElement).getPropertyValue(v));for(let i=0;i<70;i++){const e=document.createElement('i');e.className='cf';e.style.cssText=`left:${Math.random()*100}vw;background:${cs[i%3]};animation-delay:${Math.random()*.6}s;--dx:${Math.random()*240-120}px`;document.body.append(e);setTimeout(()=>e.remove(),3600)}}
+function win(){const b=document.createElement('div');b.id='banner';b.textContent=t('bingo');b.onclick=()=>b.remove();document.body.append(b);setTimeout(()=>b.remove(),2800);confetti();[523,659,784,1047].forEach((f,i)=>beep(f,.25,i*.14));navigator.vibrate&&navigator.vibrate([120,60,120])}
+
+/* player */
+function chk(){const w=winCells(S.card,S.marks,vv(),S.pat).size>0;if(w&&!S.won){S.won=true;win()}if(!w)S.won=false}
+function rP(){const v=vv(),g=$('#grid'),w=winCells(S.card,S.marks,v,S.pat),cl=role=='guest'?RC:[];
+g.style.cssText=`grid-template-columns:repeat(${v.C},1fr);--k:${33/v.C};max-width:${v.C>5?760:560}px;margin:auto`;g.innerHTML=v.L?[...v.L].map(l=>`<div class="h">${l}</div>`).join(''):'';
+S.card.forEach((n,i)=>{const b=document.createElement('button');
+if(n<0){b.className='c x';b.disabled=true}
+else{b.className='c'+(S.marks[i]?' m':'')+(w.has(i)?' w':'')+(n==0?' f':'')+(!S.marks[i]&&cl.includes(n)?' k':'');b.textContent=n||'★';b.setAttribute('aria-pressed',!!S.marks[i]);
+if(n)b.onclick=()=>{S.marks[i]=!S.marks[i];beep(S.marks[i]?660:330,.06);chk();save();rP()}}
+g.append(b)});
+$('#code').textContent=enc();
+$('#live').innerHTML=RC.slice(-8).reverse().map((x,i)=>`<span class="chip${i?'':' now'}">${lt(x)}${x}</span>`).join('')}
+const autoMark=()=>S.card.forEach((n,i)=>{if(n>0&&RC.includes(n))S.marks[i]=true});
+$('#newc').onclick=()=>{if(S.marks.filter(Boolean).length>(vv().free?1:0)&&!confirm(t('confirm')))return;newCard();rP()};
+$('#clr').onclick=()=>{S.marks=S.card.map(n=>n==0);S.won=false;save();rP()};
+$('#cp').onclick=()=>{navigator.clipboard?.writeText($('#code').textContent).then(()=>toast(t('copied')),()=>{})};
+$('#qn').onkeydown=e=>{if(e.key!='Enter')return;const n=+e.target.value,i=S.card.indexOf(n);e.target.value='';if(n>0&&i>=0){S.marks[i]=true;beep(660,.06);chk();save();rP()}else toast(t('no'))};
+$('#am').onchange=e=>{S.am=e.target.checked;if(S.am)autoMark();chk();save();rP()};
+$('#claim').onclick=()=>{hostConn&&hostConn.open&&hostConn.send({t:'claim',card:S.card})};
+
+/* caller */
+let timer=0;
+function say(n){if(!S.speak||!window.speechSynthesis)return;speechSynthesis.cancel();const l=lt(n),u=new SpeechSynthesisUtterance(S.lang=='fa'||!l?String(n):`${l}, ${n}`);u.lang=S.lang=='fa'?'fa-IR':'en-US';speechSynthesis.speak(u)}
+function stop(){clearInterval(timer);timer=0;$('#auto').textContent=t('auto')}
+function draw(){const v=vv(),r=span(1,v.N).filter(n=>!S.called.includes(n));if(!r.length){toast(t('done'));stop();return}const n=r[Math.random()*r.length|0];S.called.push(n);save();rC(true);beep(520,.1);say(n)}
+function rC(a){const v=vv(),c=S.called,n=c[c.length-1],b=$('#ball');b.innerHTML=n?`${v.L?`<small>${lt(n)}</small>`:''}${n}`:'?';b.style.borderColor=n&&v.L?COL[(n-1)/v.cs|0]:'';
+if(a){b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
+$('#cnt').textContent=`${c.length} / ${v.N} · ${v.N-c.length} ${t('left')}`;
+$('#prev').innerHTML=c.slice(-6,-1).reverse().map(x=>`<span class="chip">${lt(x)}${x}</span>`).join('');
+const pc=v.tk?10:v.cs,bd=$('#board');bd.style.gridTemplateColumns=`auto repeat(${pc},1fr)`;let h='';
+for(let r=0;r<v.N/pc;r++){h+=`<b>${v.L?v.L[r]:''}</b>`;for(let k=1;k<=pc;k++){const x=r*pc+k;h+=`<i class="${c.includes(x)?'on':''}">${x}</i>`}}bd.innerHTML=h;
+$('#hist').innerHTML=c.map((x,i)=>`<span class="chip" title="#${i+1}">${lt(x)}${x}</span>`).reverse().join('');$('#spk').checked=S.speak}
+$('#draw').onclick=draw;
+$('#undo').onclick=()=>{S.called.pop();save();rC()};
+$('#ng').onclick=()=>{if(S.called.length&&!confirm(t('confirm')))return;stop();S.called=[];save();rC();$('#vres').textContent=''};
+$('#auto').onclick=()=>{if(timer){stop();return}draw();timer=setInterval(draw,$('#int').value*1000);$('#auto').textContent=t('stop')};
+$('#int').onchange=()=>{if(timer){clearInterval(timer);timer=setInterval(draw,$('#int').value*1000)}};
+$('#spk').onchange=e=>{S.speak=e.target.checked;save()};
+$('#vb').onclick=()=>{const d=dec($('#vin').value),r=$('#vres'),x=d&&d.id==S.vid&&checkCard(d.card,vv(),S.called,S.pat);
+if(!x||x.bad){r.textContent=t('bad');return}r.textContent=x.win?t('ok'):`${t('notyet')}. ${t('unc')}: ${x.miss.join(', ')}`;x.win&&beep(784,.2)};
+
+/* link-up (PeerJS, loaded only when needed) */
+const need=()=>window.Peer?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';s.onload=ok;s.onerror=()=>no();document.head.append(s)});
+const rnd=()=>Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.random()*32|0]).join('');
+function leave(){try{peer&&peer.destroy()}catch(e){}peer=hostConn=null;conns=[];role='';RC=[]}
+async function openRoom(){try{await need()}catch(e){return toast(t('offl'))}
+leave();const code=rnd();peer=new Peer('bingo-'+code);
+peer.on('open',()=>{role='host';room=code;lstat()});
+peer.on('connection',c=>{c.on('open',()=>{conns.push(c);c.send(stMsg());lstat()});c.on('data',d=>onHost(c,d));c.on('close',()=>{conns=conns.filter(x=>x!=c);lstat()})});
+peer.on('error',e=>e.type=='unavailable-id'?openRoom():toast(t('offl')))}
+function onHost(c,d){if(!d||d.t!='claim')return;const nm=String(c.metadata?.name||'?').slice(0,16),r=checkCard(d.card,vv(),S.called,S.pat),ok=!!r.win,
+msg=r.bad?t('bad'):ok?t('ok'):`${t('notyet')} · ${t('unc')}: ${r.miss.join(', ')}`;
+c.send({t:'verdict',ok,msg});const e=document.createElement('div');e.textContent=`${nm}: ${msg}`;$('#claims').prepend(e);
+if(ok){bc({t:'win',name:nm});win()}}
+async function joinRoom(){const code=$('#jc').value.trim().toUpperCase(),name=$('#jn').value.trim().slice(0,16)||'Player'+(Math.random()*90+10|0);if(code.length!=4)return;
+try{await need()}catch(e){return toast(t('offl'))}
+leave();peer=new Peer();
+peer.on('open',()=>{const c=hostConn=peer.connect('bingo-'+code,{metadata:{name}});
+c.on('open',()=>{role='guest';room=code;S.nm=name;save();lstat();rP()});c.on('data',onGuest);c.on('close',()=>{role='';hostConn=null;lstat();toast(t('lost'))})});
+peer.on('error',e=>toast(e.type=='peer-unavailable'?t('nor'):t('offl')))}
+function onGuest(d){if(!d)return;
+if(d.t=='st'&&V[d.v]){if(d.v!=S.vid){S.vid=d.v;newCard()}S.pat=d.pat;RC=d.called||[];fixPat();if(S.am)autoMark();chk();save();bar();rP()}
+else if(d.t=='verdict')toast(d.msg);else if(d.t=='win'){toast('🏆 '+d.name);confetti()}}
+function lstat(){const h=role=='host',g=role=='guest';$('#room').hidden=!h;$('#openb').hidden=h;$('#closeb').hidden=!h;$('#rc').textContent=room;
+$('#pl').textContent=`${t('players')}: ${conns.length}`+(conns.length?' · '+conns.map(c=>c.metadata?.name).join(', '):'');
+$('#jb').hidden=g;$('#lv').hidden=!g;$('#claim').hidden=!g;$('#amw').hidden=!g;$('#live').hidden=!g;$('#jst').textContent=g?`${t('conn')} ${room}`:'';$('#am').checked=S.am;bar()}
+$('#openb').onclick=openRoom;$('#closeb').onclick=()=>{leave();lstat()};$('#jb').onclick=joinRoom;$('#lv').onclick=()=>{leave();lstat();rP()};
+$('#cl').onclick=()=>{navigator.clipboard?.writeText(location.href.split(/[?#]/)[0]+'?join='+room).then(()=>toast(t('copied')),()=>{})};
+
+/* shell */
+const TH={classic:['#eef1f6','#e63946'],cyber:['#0a0a14','#ff2bd6'],persia:['#0c3b5c','#e0b13a'],ocean:['#03283b','#3fd0ff'],sunset:['#2b1030','#ffb347']};
+function setVar(id){if(id==S.vid||role=='guest')return;if((S.called.length||S.marks.filter(Boolean).length>(vv().free?1:0))&&!confirm(t('confirm')))return;
+stop();S.vid=id;S.called=[];fixPat();newCard();ap();show(S.view)}
+function bar(){$$('.pills').forEach(p=>{p.innerHTML=Object.keys(V).map(k=>`<button class="pill${k==S.vid?' on':''}" data-v="${k}"${role=='guest'?' disabled':''}>${k}</button>`).join('')+`<span class="mu">${t('v'+S.vid)}</span>`;p.querySelectorAll('button').forEach(b=>b.onclick=()=>setVar(+b.dataset.v))});
+$('#pat').innerHTML=Object.keys(pats(vv())).map(k=>`<option value="${k}">${t('p_'+k)}`).join('');$('#pat').value=S.pat;$('#pat').disabled=role=='guest';
+$('#sw').innerHTML=Object.keys(TH).map(k=>`<button class="${k==S.theme?'on':''}" data-t="${k}" title="${t('th_'+k)}" aria-label="${t('th_'+k)}" style="background:linear-gradient(135deg,${TH[k][0]} 50%,${TH[k][1]} 50%)"></button>`).join('');
+$('#sw').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.theme=b.dataset.t;ap();save()});
+$('#lng').textContent=S.lang=='en'?'فارسی':'English';$('#snd').textContent=S.snd?'🔊':'🔇'}
+function ap(){const d=document.documentElement;d.dataset.theme=S.theme;d.lang=S.lang;d.dir=S.lang=='fa'?'rtl':'ltr';
+$$('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));$$('[data-p]').forEach(e=>e.placeholder=t(e.dataset.p));$('#auto').textContent=timer?t('stop'):t('auto');bar()}
+function show(v){S.view=v;['home','player','caller','about'].forEach(x=>$('#v-'+x).hidden=x!=v);$('#homeb').hidden=v=='home';if(v!='caller')stop();
+if(!S.card||S.card.length!=vv().R*vv().C)newCard();if(v=='player')rP();if(v=='caller')rC();save();navigator.wakeLock?.request('screen').catch(()=>{})}
+$$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+$('#homeb').onclick=()=>show('home');
+$('#setb').onclick=()=>$('#sheet').hidden=!$('#sheet').hidden;
+$('#pat').onchange=e=>{S.pat=e.target.value;S.won=false;save();if(S.view=='player'){chk();save();rP()}};
+$('#lng').onclick=()=>{S.lang=S.lang=='en'?'fa':'en';ap();show(S.view)};
+$('#snd').onclick=()=>{S.snd=!S.snd;bar();save()};
+document.onkeydown=e=>{if(S.view=='caller'&&e.code=='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName)){e.preventDefault();draw()}};
+fixPat();if(S.view=='about')S.view='home';$('#jn').value=S.nm||'';
+const q=new URLSearchParams(location.search).get('join');if(q){S.view='player';$('#jc').value=q.slice(0,4).toUpperCase();$('#lk-p').open=true}
+ap();lstat();show(S.view);
+</script>
+</body>
+</html>
